@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>اشعار عاشقانه</title>
+<style>
+  :root{--bg:#fbf6f1;--fg:#2b2024;--accent:#a3304f;--card:#fff}
+  @media (prefers-color-scheme:dark){:root{--bg:#1c1518;--fg:#f1e6e8;--accent:#e58aa3;--card:#271d21}}
+  body{margin:0;background:var(--bg);color:var(--fg);font:18px/1.9 "Vazirmatn",Tahoma,sans-serif}
+  main{max-width:42rem;margin:0 auto;padding:2rem 1rem}
+  h1{color:var(--accent)}
+  input{width:100%;box-sizing:border-box;padding:.6rem;font:inherit;border:1px solid var(--accent);border-radius:8px;background:var(--card);color:var(--fg)}
+  article{background:var(--card);border-radius:10px;padding:1rem 1.2rem;margin:1rem 0}
+  h2{margin:0;font-size:1.1rem}
+  a{color:var(--accent)}
+  small{opacity:.7}
+  pre{font:inherit;white-space:pre-wrap;margin:.6rem 0 0}
+</style>
+<main>
+  <h1>اشعار عاشقانه</h1>
+  <input id="q" placeholder="جستجو در شاعر یا عنوان…" aria-label="جستجو">
+  <div id="list"></div>
+</main>
+<script>
+fetch('poems.json').then(r => r.json()).then(poems => {
+  const list = document.getElementById('list'), q = document.getElementById('q');
+  const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  const render = () => {
+    const t = q.value.trim();
+    list.innerHTML = poems.filter(p => (p.poet + p.title).includes(t)).map(p => `
+      <article>
+        <h2>${p.url ? `<a href="${esc(p.url)}" target="_blank" rel="noopener">${esc(p.title)}</a>` : esc(p.title)}</h2>
+        <small>${esc(p.poet)}${p.note ? ' — ' + esc(p.note) : ''}</small>
+        ${p.text ? `<pre>${esc(p.text)}</pre>` : ''}
+      </article>`).join('');
+  };
+  q.oninput = render; render();
+});
+</script>
+</html>
